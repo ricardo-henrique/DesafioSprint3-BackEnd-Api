@@ -1,12 +1,15 @@
-﻿namespace LisoLanches.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
-public class User
+namespace LisoLanches.Models;
+
+public class User : IdentityUser
 {
-    public int Id { get; set; }
-    public string FullName { get; set; }
-    public string Email { get; set; }
-    public string Cpf { get; set; }
-    public int Age { get; set; }
-    public string Password { get; set; }
-    public string Address { get; set; }
+    [Required, MaxLength(50)]
+    public string FirstName { get; set; } = string.Empty;
+
+    [Required, MaxLength(50)]
+    public string LastName { get; set; } = string.Empty;
+
+    public List<Order> Orders { get; set; } = new();
 }
