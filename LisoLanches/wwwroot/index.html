@@ -5,8 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LisoLanches</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
-    <h1>Hello</h1>
+    <div class="login-container">
+        <div class="card login-card">
+            <div class="card-header">
+                <h2>LisoLanches</h2>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="seu@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="password" placeholder="Digite sua senha" required>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="remember" />
+                        <label class="form-check-label" for="remember">
+                            Lembrar de mim
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-login">Entrar</button>
+                </form>
+
+                <div class="login-footer">
+                    <p>Não tem conta? <a href="./pages/singup.html">Cadastre-se</a></p>
+                    <p><a href="#">Esqueceu a senha?</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,16 +1,22 @@
-﻿document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('signupForm');
+    const fullnameInput = document.getElementById('fullname');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const phoneInput = document.getElementById('phone');
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         clearErrors();
 
+        const fullname = fullnameInput.value.trim();
         const email = emailInput.value.trim();
         const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const phone = phoneInput.value.trim();
 
-        const errors = validateForm(email, password);
+        const errors = validateForm(fullname, email, password, confirmPassword, phone);
 
         if (errors.length > 0) {
             displayErrors(errors);
@@ -19,7 +25,7 @@
 
         try {
             showLoadingState(true);
-            await performLogin(email, password);
+            await performSignup(fullname, email, password, phone);
         } catch (error) {
             displayErrors([error.message]);
         } finally {
@@ -27,12 +33,21 @@
         }
     });
 
+    fullnameInput.addEventListener('focus', clearErrors);
     emailInput.addEventListener('focus', clearErrors);
     passwordInput.addEventListener('focus', clearErrors);
+    confirmPasswordInput.addEventListener('focus', clearErrors);
+    phoneInput.addEventListener('focus', clearErrors);
 });
 
-function validateForm(email, password) {
+function validateForm(fullname, email, password, confirmPassword, phone) {
     const errors = [];
+
+    if (!fullname) {
+        errors.push('Nome completo é obrigatório');
+    } else if (fullname.length < 3) {
+        errors.push('Nome completo deve ter no mínimo 3 caracteres');
+    }
 
     if (!email) {
         errors.push('Email é obrigatório');
@@ -46,6 +61,16 @@ function validateForm(email, password) {
         errors.push('Senha deve ter no mínimo 6 caracteres');
     }
 
+    if (!confirmPassword) {
+        errors.push('Confirmação de senha é obrigatória');
+    } else if (password !== confirmPassword) {
+        errors.push('As senhas não conferem');
+    }
+
+    if (phone && !isValidPhone(phone)) {
+        errors.push('Formato de telefone inválido');
+    }
+
     return errors;
 }
 
@@ -54,22 +79,29 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-async function performLogin(email, password) {
-    const response = await fetch('/api/auth/login', {
+function isValidPhone(phone) {
+    const phoneRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+    return phoneRegex.test(phone) || phone === '';
+}
+
+async function performSignup(fullname, email, password, phone) {
+    const response = await fetch('/api/Auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            fullname: fullname,
             email: email,
-            password: password
+            password: password,
+            phone: phone
         })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-        const errorMessage = data.message || data.error || 'Erro ao fazer login. Tente novamente.';
+        const errorMessage = data.message || data.error || 'Erro ao registrar. Tente novamente.';
         throw new Error(errorMessage);
     }
 
@@ -81,9 +113,9 @@ async function performLogin(email, password) {
         localStorage.setItem('user', JSON.stringify(data.user));
     }
 
-    showSuccessMessage('Login realizado com sucesso!');
+    showSuccessMessage('Cadastro realizado com sucesso!');
     setTimeout(() => {
-        window.location.href = '/dashboard';
+        window.location.href = '/index.html';
     }, 1500);
 }
 
@@ -95,7 +127,7 @@ function displayErrors(errors) {
         errorContainer.id = 'error-container';
         errorContainer.className = 'alert alert-danger alert-dismissible fade show';
         errorContainer.setAttribute('role', 'alert');
-        const form = document.querySelector('form');
+        const form = document.getElementById('signupForm');
         form.parentElement.insertBefore(errorContainer, form);
     }
 
@@ -117,7 +149,7 @@ function showSuccessMessage(message) {
     if (!successContainer) {
         successContainer = document.createElement('div');
         successContainer.id = 'success-container';
-        const form = document.querySelector('form');
+        const form = document.getElementById('signupForm');
         form.parentElement.insertBefore(successContainer, form);
     }
 
@@ -143,18 +175,27 @@ function clearErrors() {
 
 function showLoadingState(isLoading) {
     const button = document.querySelector('.btn-login');
+    const fullnameInput = document.getElementById('fullname');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const phoneInput = document.getElementById('phone');
 
     if (isLoading) {
         button.disabled = true;
-        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Entrando...';
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cadastrando...';
+        fullnameInput.disabled = true;
         emailInput.disabled = true;
         passwordInput.disabled = true;
+        confirmPasswordInput.disabled = true;
+        phoneInput.disabled = true;
     } else {
         button.disabled = false;
-        button.innerHTML = 'Entrar';
+        button.innerHTML = 'Cadastrar';
+        fullnameInput.disabled = false;
         emailInput.disabled = false;
         passwordInput.disabled = false;
+        confirmPasswordInput.disabled = false;
+        phoneInput.disabled = false;
     }
 }

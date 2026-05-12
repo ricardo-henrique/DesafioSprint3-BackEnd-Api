@@ -14,58 +14,53 @@ public class OrderRepository : IOrderRepository
         _context = context;
     }
 
-    public async Task<Order?> CreateOrderAsync(string userId, List<OrderItemRequest> requestedItems)
+    public async Task<List<Item>> GetAvailableItemsByIdsAsync(List<int> itemIds)
+       => await _context.Items.Where(i => itemIds.Contains(i.Id) && i.IsAvailable).ToListAsync();
+
+    public async Task AddOrderAsync(Order order)
     {
-       
-        var itemIds = requestedItems.Select(i => i.ItemId).ToList();
-        var menuItems = await _context.Items
-            .Where(i => itemIds.Contains(i.Id) && i.IsAvailable).ToListAsync();
-
-        if (!menuItems.Any()) return null;
-
-        
-        var order = new Order
-        {
-            UserId = userId,
-            OrderDate = DateTime.UtcNow,
-            OrderItems = new List<OrderItem>()
-        };
-
-        decimal runningTotal = 0;
-
-       
-        foreach (var req in requestedItems)
-        {
-            var menuItem = menuItems.FirstOrDefault(m => m.Id == req.ItemId);
-            if (menuItem == null) continue;
-
-            var orderItem = new OrderItem
-            {
-                ItemId = menuItem.Id,
-                Quantity = req.Quantity,
-                PriceAtPurchase = menuItem.Price 
-            };
-
-            runningTotal += (orderItem.PriceAtPurchase * orderItem.Quantity);
-            order.OrderItems.Add(orderItem);
-        }
-
-        order.TotalPrice = runningTotal;
-
-        
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
-
-        return order;
     }
 
     public async Task<List<Order>> GetUserOrdersAsync(string userId)
-    {
-        return await _context.Orders
+        => await _context.Orders
             .Where(o => o.UserId == userId)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Item)
             .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
+
+    public async Task<Order?> GetByIdAsync(int id)
+        => await _context.Orders
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Item)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+    public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+
+    public async Task UpdateStatusAsync(int orderId, OrderStatus newStatus)
+    {
+        var order = await _context.Orders.FindAsync(orderId);
+        if (order != null)
+        {
+            order.Status = newStatus;
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public Task<Order?> CreateOrderAsync(string userId, List<OrderItemRequest> requestedItems)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task DeleteOrderAsync(int orderId)
+    {
+        var order = await _context.Orders.FindAsync(orderId);
+        if (order != null)
+        {
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LisoLanches.Models;
 
-public class User : IdentityUser
+public class Users : IdentityUser
 {
     [Required, MaxLength(50)]
     public string FirstName { get; set; } = string.Empty;

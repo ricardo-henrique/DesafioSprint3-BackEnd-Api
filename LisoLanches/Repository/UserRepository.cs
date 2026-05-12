@@ -11,10 +11,10 @@ namespace LisoLanches.Repository;
 
 public class UserRepository : IUserRepository
 {
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<Users> _userManager;
     private readonly IConfiguration _config;
 
-    public UserRepository(UserManager<User> userManager, IConfiguration config)
+    public UserRepository(UserManager<Users> userManager, IConfiguration config)
     {
         _userManager = userManager;
         _config = config;
@@ -22,7 +22,7 @@ public class UserRepository : IUserRepository
 
     public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
     {
-        var user = new User
+        var user = new Users
         {
             UserName = request.Email,
             Email = request.Email,
@@ -56,14 +56,14 @@ public class UserRepository : IUserRepository
         return new AuthResponse { Token = token };
     }
 
-    private string GenerateJwtToken(User user, IList<string> roles)
+    private string GenerateJwtToken(Users user, IList<string> roles)
     {
         var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-        new Claim(ClaimTypes.Email, user.Email!),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-    };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email!),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        };
 
         foreach (var role in roles)
         {

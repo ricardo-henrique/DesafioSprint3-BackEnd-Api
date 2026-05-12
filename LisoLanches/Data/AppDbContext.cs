@@ -5,7 +5,7 @@ using System.Reflection.Emit;
 
 namespace LisoLanches.Data;
 
-public class AppDbContext : IdentityDbContext<User>
+public class AppDbContext : IdentityDbContext<Users>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -24,6 +24,8 @@ public class AppDbContext : IdentityDbContext<User>
         {
             property.SetColumnType("decimal(18,2)");
         }
+
+        builder.Entity<Users>().ToTable("Users");
 
         // One-to-Many: User -> Orders
         builder.Entity<Order>()
