@@ -2,6 +2,7 @@
 using LisoLanches.Dtos.Response;
 using LisoLanches.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,7 +21,7 @@ public class UserRepository : IUserRepository
         _config = config;
     }
 
-    public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
+    public async Task<IdentityResult> RegisterAsync([FromBody] RegisterRequest request)
     {
         var user = new Users
         {
@@ -39,6 +40,45 @@ public class UserRepository : IUserRepository
         }
 
         return result;
+    }
+
+    public async Task<IdentityResult> RegisterAdminAsync([FromBody] RegisterRequest request)
+    {
+        var user = new Users
+        {
+            UserName = request.Email,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName
+        };
+
+        var result = await _userManager.CreateAsync(user, request.Password);
+
+        // Add new user to "Admin" role
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(user, "Admin");
+        }
+
+        return result;
+    }
+
+    public async Task<bool> AddRoleToUserAsync(string userId, string role)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+
+        var result = await _userManager.AddToRoleAsync(user, role);
+        return result.Succeeded;
+    }
+
+    public async Task<bool> RemoveRoleFromUserAsync(string userId, string role)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+
+        var result = await _userManager.RemoveFromRoleAsync(user, role);
+        return result.Succeeded;
     }
 
     public async Task<AuthResponse?> LoginAsync(LoginRequest request)

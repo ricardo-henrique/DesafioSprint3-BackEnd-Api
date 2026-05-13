@@ -1,22 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('signupForm');
-    const fullnameInput = document.getElementById('fullname');
+    const firstNameInput = document.getElementById('firstName');
+    const lastNameInput = document.getElementById('lastName');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirmPassword');
-    const phoneInput = document.getElementById('phone');
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         clearErrors();
 
-        const fullname = fullnameInput.value.trim();
+        const firstName = firstNameInput.value.trim();
+        const lastName = lastNameInput.value.trim();
         const email = emailInput.value.trim();
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
-        const phone = phoneInput.value.trim();
 
-        const errors = validateForm(fullname, email, password, confirmPassword, phone);
+        const errors = validateForm(firstName, lastName, email, password, confirmPassword);
 
         if (errors.length > 0) {
             displayErrors(errors);
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             showLoadingState(true);
-            await performSignup(fullname, email, password, phone);
+            await performSignup(firstName, lastName, email, password);
         } catch (error) {
             displayErrors([error.message]);
         } finally {
@@ -33,20 +33,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    fullnameInput.addEventListener('focus', clearErrors);
+    firstNameInput.addEventListener('focus', clearErrors);
+    lastNameInput.addEventListener('focus', clearErrors);
     emailInput.addEventListener('focus', clearErrors);
     passwordInput.addEventListener('focus', clearErrors);
     confirmPasswordInput.addEventListener('focus', clearErrors);
-    phoneInput.addEventListener('focus', clearErrors);
 });
 
-function validateForm(fullname, email, password, confirmPassword, phone) {
+function validateForm(firstName, lastName, email, password, confirmPassword) {
     const errors = [];
 
-    if (!fullname) {
-        errors.push('Nome completo é obrigatório');
-    } else if (fullname.length < 3) {
-        errors.push('Nome completo deve ter no mínimo 3 caracteres');
+    if (!firstName) {
+        errors.push('Primeiro nome é obrigatório');
+    } else if (firstName.length < 2) {
+        errors.push('Primeiro nome deve ter no mínimo 2 caracteres');
+    }
+
+    if (!lastName) {
+        errors.push('Sobrenome é obrigatório');
+    } else if (lastName.length < 2) {
+        errors.push('Sobrenome deve ter no mínimo 2 caracteres');
     }
 
     if (!email) {
@@ -67,10 +73,6 @@ function validateForm(fullname, email, password, confirmPassword, phone) {
         errors.push('As senhas não conferem');
     }
 
-    if (phone && !isValidPhone(phone)) {
-        errors.push('Formato de telefone inválido');
-    }
-
     return errors;
 }
 
@@ -79,22 +81,17 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-function isValidPhone(phone) {
-    const phoneRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
-    return phoneRegex.test(phone) || phone === '';
-}
-
-async function performSignup(fullname, email, password, phone) {
+async function performSignup(firstName, lastName, email, password) {
     const response = await fetch('/api/Auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            fullname: fullname,
             email: email,
             password: password,
-            phone: phone
+            firstName: firstName,
+            lastName: lastName
         })
     });
 
@@ -175,27 +172,27 @@ function clearErrors() {
 
 function showLoadingState(isLoading) {
     const button = document.querySelector('.btn-login');
-    const fullnameInput = document.getElementById('fullname');
+    const firstNameInput = document.getElementById('firstName');
+    const lastNameInput = document.getElementById('lastName');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirmPassword');
-    const phoneInput = document.getElementById('phone');
 
     if (isLoading) {
         button.disabled = true;
         button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cadastrando...';
-        fullnameInput.disabled = true;
+        firstNameInput.disabled = true;
+        lastNameInput.disabled = true;
         emailInput.disabled = true;
         passwordInput.disabled = true;
         confirmPasswordInput.disabled = true;
-        phoneInput.disabled = true;
     } else {
         button.disabled = false;
         button.innerHTML = 'Cadastrar';
-        fullnameInput.disabled = false;
+        firstNameInput.disabled = false;
+        lastNameInput.disabled = false;
         emailInput.disabled = false;
         passwordInput.disabled = false;
         confirmPasswordInput.disabled = false;
-        phoneInput.disabled = false;
     }
 }

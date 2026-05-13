@@ -55,7 +55,7 @@ function isValidEmail(email) {
 }
 
 async function performLogin(email, password) {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch('/api/Auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -83,7 +83,7 @@ async function performLogin(email, password) {
 
     showSuccessMessage('Login realizado com sucesso!');
     setTimeout(() => {
-        window.location.href = '/dashboard';
+        window.location.href = '/pages/home-page.html';
     }, 1500);
 }
 
