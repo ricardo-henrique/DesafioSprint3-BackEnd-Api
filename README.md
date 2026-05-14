@@ -7,6 +7,7 @@ O **Liso Lanches** é uma solução completa de delivery desenvolvida para geren
 ## 🚀 Tecnologias Utilizadas
 
 ### Back-end
+
 - **ASP.NET Core 8.0**: Framework principal.
 - **Entity Framework Core**: ORM para persistência de dados.
 - **MySQL**: Banco de dados relacional.
@@ -14,6 +15,7 @@ O **Liso Lanches** é uma solução completa de delivery desenvolvida para geren
 - **BCrypt**: Criptografia de senhas.
 
 ### Front-end
+
 - **HTML5 & CSS3**: Estrutura e estilização (Vanilla CSS).
 - **JavaScript (ES6+)**: Lógica dinâmica e consumo de APIs.
 - **Bootstrap 5**: Framework CSS para design responsivo.
@@ -24,8 +26,11 @@ O **Liso Lanches** é uma solução completa de delivery desenvolvida para geren
 ## 🛠️ Como Executar o Projeto
 
 ### Pré-requisitos
+
 - .NET SDK 8.0+
 - MySQL Server
+
+> ⚠️ **Importante**: Para evitar problemas de permissão do Windows, é recomendado clonar ou mover este projeto para o diretório `c:\Projects`. Pastas em locais como `C:\Users\{user}\Documents` podem causar erros de acesso durante a execução.
 
 ### Passo a Passo
 
@@ -35,10 +40,12 @@ O **Liso Lanches** é uma solução completa de delivery desenvolvida para geren
 
 2. **Migrações**:
    No Visual Studio, abra o **Console do Gerenciador de Pacotes** (Tools > NuGet Package Manager > Package Manager Console) e execute:
+
    ```powershell
    Update-Database
    ```
-   *(Ou use `dotnet ef database update` via terminal se preferir).*
+
+   _(Ou use `dotnet ef database update` via terminal se preferir)._
 
 3. **Rodar a Aplicação**:
    - No Visual Studio, basta pressionar **F5** ou clicar no botão de "Play" (LisoLanches).
@@ -61,11 +68,13 @@ Este script localizará o usuário pelo e-mail e fará o vínculo necessário co
 ## 🔄 Fluxo da Aplicação
 
 ### 1. Área Administrativa (`/pages/admin-login.html`)
+
 - **Login**: O administrador acessa com as credenciais criadas via SQL.
 - **Dashboard**: Visualização de usuários cadastrados e itens do cardápio.
 - **Gestão de Itens**: Criação de novos lanches com upload de imagem, preço e status de disponibilidade.
 
 ### 2. Experiência do Cliente (`/index.html`)
+
 - **Autenticação**: O cliente se cadastra ou faz login.
 - **Cardápio (`home-page.html`)**: Navegação pelos itens disponíveis, adição ao carrinho e visualização do subtotal.
 - **Checkout**: Revisão do pedido, escolha da forma de pagamento e confirmação da compra.
