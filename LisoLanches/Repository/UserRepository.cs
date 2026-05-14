@@ -1,4 +1,4 @@
-﻿using LisoLanches.Dtos.Request;
+using LisoLanches.Dtos.Request;
 using LisoLanches.Dtos.Response;
 using LisoLanches.Models;
 using Microsoft.AspNetCore.Identity;
@@ -79,6 +79,27 @@ public class UserRepository : IUserRepository
 
         var result = await _userManager.RemoveFromRoleAsync(user, role);
         return result.Succeeded;
+    }
+
+    public async Task<List<object>> GetAllUsersWithRolesAsync()
+    {
+        var users = _userManager.Users.ToList();
+        var userList = new List<object>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            userList.Add(new
+            {
+                user.Id,
+                user.FirstName,
+                user.LastName,
+                user.Email,
+                Roles = roles
+            });
+        }
+
+        return userList;
     }
 
     public async Task<AuthResponse?> LoginAsync(LoginRequest request)

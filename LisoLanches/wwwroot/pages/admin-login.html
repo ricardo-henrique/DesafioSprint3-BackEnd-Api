@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Administrativo - Liso Lanches</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link href="../css/admin-login.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="login-card">
+        <div class="brand-logo">
+            LL
+        </div>
+        <h2 class="login-title">Área Restrita</h2>
+        <p class="login-subtitle">Acesso exclusivo para administradores</p>
+
+        <form id="adminLoginForm">
+            <div class="mb-3">
+                <label for="emailInput" class="form-label">E-mail Administrativo</label>
+                <input type="email" class="form-control" id="emailInput" placeholder="admin@lisolanches.com" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="passwordInput" class="form-label">Senha</label>
+                <input type="password" class="form-control" id="passwordInput" placeholder="••••••••" required>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label text-secondary" for="rememberMe" style="font-size: 0.85rem;">
+                        Lembrar-me
+                    </label>
+                </div>
+                <a href="#" class="text-decoration-none" style="color: #ef4444; font-size: 0.85rem;">Esqueceu a
+                    senha?</a>
+            </div>
+
+            <button type="submit" class="btn btn-login">Entrar no Painel</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <!-- Custom Scripts -->
+    <script src="../js/admin-login.js"></script>
+</body>
+
+</html>

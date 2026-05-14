@@ -1,4 +1,4 @@
-﻿using LisoLanches.Dtos.Request;
+using LisoLanches.Dtos.Request;
 using LisoLanches.Dtos.Response;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,4 +11,5 @@ public interface IUserRepository
     Task<AuthResponse?> LoginAsync(LoginRequest request);
     Task<bool> AddRoleToUserAsync(string userId, string role);
     Task<bool> RemoveRoleFromUserAsync(string userId, string role);
+    Task<List<object>> GetAllUsersWithRolesAsync();
 }

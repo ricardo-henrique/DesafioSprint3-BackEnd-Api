@@ -1,4 +1,4 @@
-﻿using LisoLanches.Dtos.Request;
+using LisoLanches.Dtos.Request;
 using LisoLanches.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
     {
         var result = await _userRepo.RegisterAsync(request);
         if (!result.Succeeded) return BadRequest(result.Errors);
-        return Ok("User registered successfully");
+        return Ok(new { message = "User registered successfully" });
     }
 
     [HttpPost("register-admin")]
@@ -28,7 +28,7 @@ public class AuthController : ControllerBase
     {
         var result = await _userRepo.RegisterAdminAsync(request);
         if (!result.Succeeded) return BadRequest(result.Errors);
-        return Ok("Admin user registered successfully");
+        return Ok(new { message = "Admin user registered successfully" });
     }
 
     [HttpPost("login")]
@@ -45,7 +45,7 @@ public class AuthController : ControllerBase
     {
         var success = await _userRepo.AddRoleToUserAsync(userId, role);
         if (!success) return BadRequest("Failed to assign role to user");
-        return Ok($"Role '{role}' assigned successfully");
+        return Ok(new { message = $"Role '{role}' assigned successfully" });
     }
 
     [HttpPost("remove-role/{userId}/{role}")]
@@ -54,6 +54,14 @@ public class AuthController : ControllerBase
     {
         var success = await _userRepo.RemoveRoleFromUserAsync(userId, role);
         if (!success) return BadRequest("Failed to remove role from user");
-        return Ok($"Role '{role}' removed successfully");
+        return Ok(new { message = $"Role '{role}' removed successfully" });
+    }
+
+    [HttpGet("users")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await _userRepo.GetAllUsersWithRolesAsync();
+        return Ok(users);
     }
 }

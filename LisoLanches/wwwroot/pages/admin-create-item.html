@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Novo Item - Liso Lanches</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link href="../css/admin-homepage.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand-logo">Liso Lanches <br><span style="font-size: 0.9rem; color: #94a3b8;">Admin Panel</span></div>
+        <a href="admin-homepage.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="admin-create-item.html" class="active"><i class="bi bi-plus-circle"></i> Novo Item</a>
+        <a href="#" id="logoutBtn" style="position: absolute; bottom: 20px; width: 100%;"><i class="bi bi-box-arrow-left"></i> Sair</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Criar Novo Item</h1>
+            <a href="admin-homepage.html" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Voltar</a>
+        </div>
+
+        <div id="form-error-container"></div>
+        <div id="form-success-container"></div>
+
+        <div class="card card-custom">
+            <div class="card-header-custom">
+                Preencha os detalhes do item
+            </div>
+            <div class="card-body p-4">
+                <form id="createItemForm">
+                    <div class="mb-3">
+                        <label for="itemName" class="form-label fw-medium">Nome do Item <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="itemName" placeholder="Ex: X-Salada Especial" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="itemPrice" class="form-label fw-medium">Preço (R$) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">R$</span>
+                            <input type="number" class="form-control" id="itemPrice" placeholder="0.00" step="0.01" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="itemImage" class="form-label fw-medium">Imagem do Item</label>
+                        <input type="file" class="form-control" id="itemImage" accept="image/*">
+                        <div class="form-text">Faça o upload de uma imagem ilustrativa para o lanche.</div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="itemIsAvailable" checked>
+                        <label class="form-check-label fw-medium" for="itemIsAvailable">Item Disponível para Venda</label>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary px-4 py-2" id="submitBtn" style="background-color: #ef4444; border-color: #ef4444;">
+                            <i class="bi bi-check-circle me-2"></i> Cadastrar Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.css"></script>
+    <!-- Custom Script -->
+    <script src="../js/admin-create-item.js"></script>
+</body>
+</html>

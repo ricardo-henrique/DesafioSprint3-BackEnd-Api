@@ -1,22 +1,16 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('signupForm');
-    const firstNameInput = document.getElementById('firstName');
-    const lastNameInput = document.getElementById('lastName');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const form = document.getElementById('adminLoginForm');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
         clearErrors();
 
-        const firstName = firstNameInput.value.trim();
-        const lastName = lastNameInput.value.trim();
         const email = emailInput.value.trim();
         const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
 
-        const errors = validateForm(firstName, lastName, email, password, confirmPassword);
+        const errors = validateForm(email, password);
 
         if (errors.length > 0) {
             displayErrors(errors);
@@ -25,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             showLoadingState(true);
-            await performSignup(firstName, lastName, email, password);
+            await performAdminLogin(email, password);
         } catch (error) {
             displayErrors([error.message]);
         } finally {
@@ -33,44 +27,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    firstNameInput.addEventListener('focus', clearErrors);
-    lastNameInput.addEventListener('focus', clearErrors);
     emailInput.addEventListener('focus', clearErrors);
     passwordInput.addEventListener('focus', clearErrors);
-    confirmPasswordInput.addEventListener('focus', clearErrors);
 });
 
-function validateForm(firstName, lastName, email, password, confirmPassword) {
+function validateForm(email, password) {
     const errors = [];
 
-    if (!firstName) {
-        errors.push('Primeiro nome é obrigatório');
-    } else if (firstName.length < 2) {
-        errors.push('Primeiro nome deve ter no mínimo 2 caracteres');
-    }
-
-    if (!lastName) {
-        errors.push('Sobrenome é obrigatório');
-    } else if (lastName.length < 2) {
-        errors.push('Sobrenome deve ter no mínimo 2 caracteres');
-    }
-
     if (!email) {
-        errors.push('Email é obrigatório');
+        errors.push('Email Administrativo é obrigatório');
     } else if (!isValidEmail(email)) {
         errors.push('Formato de email inválido');
     }
 
     if (!password) {
         errors.push('Senha é obrigatória');
-    } else if (password.length < 6) {
-        errors.push('Senha deve ter no mínimo 6 caracteres');
-    }
-
-    if (!confirmPassword) {
-        errors.push('Confirmação de senha é obrigatória');
-    } else if (password !== confirmPassword) {
-        errors.push('As senhas não conferem');
     }
 
     return errors;
@@ -81,38 +52,43 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-async function performSignup(firstName, lastName, email, password) {
-    const response = await fetch('/api/Auth/register', {
+async function performAdminLogin(email, password) {
+    const response = await fetch('/api/Auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            email: email,
-            password: password,
-            firstName: firstName,
-            lastName: lastName
-        })
+        body: JSON.stringify({ email, password })
     });
 
-    const data = await response.json();
+    let data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+    } else {
+        const textData = await response.text();
+        if (!response.ok) {
+            throw new Error(textData || 'Erro ao fazer login. Verifique suas credenciais.');
+        }
+        data = textData;
+    }
 
     if (!response.ok) {
-        const errorMessage = data.message || data.error || 'Erro ao registrar. Tente novamente.';
+        const errorMessage = (data && data.message) || (data && data.error) || 'Erro ao fazer login. Tente novamente.';
         throw new Error(errorMessage);
     }
 
-    if (data.token) {
-        localStorage.setItem('authToken', data.token);
+    if (data && data.token) {
+        localStorage.setItem('adminToken', data.token);
     }
 
-    if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
+    if (data && data.user) {
+        localStorage.setItem('adminUser', JSON.stringify(data.user));
     }
 
-    showSuccessMessage('Cadastro realizado com sucesso!');
+    showSuccessMessage('Login administrativo realizado com sucesso!');
     setTimeout(() => {
-        window.location.href = '/index.html';
+        window.location.href = '/pages/admin-homepage.html';
     }, 1500);
 }
 
@@ -124,7 +100,7 @@ function displayErrors(errors) {
         errorContainer.id = 'error-container';
         errorContainer.className = 'alert alert-danger alert-dismissible fade show';
         errorContainer.setAttribute('role', 'alert');
-        const form = document.getElementById('signupForm');
+        const form = document.getElementById('adminLoginForm');
         form.parentElement.insertBefore(errorContainer, form);
     }
 
@@ -146,7 +122,7 @@ function showSuccessMessage(message) {
     if (!successContainer) {
         successContainer = document.createElement('div');
         successContainer.id = 'success-container';
-        const form = document.getElementById('signupForm');
+        const form = document.getElementById('adminLoginForm');
         form.parentElement.insertBefore(successContainer, form);
     }
 
@@ -172,27 +148,18 @@ function clearErrors() {
 
 function showLoadingState(isLoading) {
     const button = document.querySelector('.btn-login');
-    const firstNameInput = document.getElementById('firstName');
-    const lastNameInput = document.getElementById('lastName');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
 
     if (isLoading) {
         button.disabled = true;
-        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cadastrando...';
-        firstNameInput.disabled = true;
-        lastNameInput.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Entrando...';
         emailInput.disabled = true;
         passwordInput.disabled = true;
-        confirmPasswordInput.disabled = true;
     } else {
         button.disabled = false;
-        button.innerHTML = 'Cadastrar';
-        firstNameInput.disabled = false;
-        lastNameInput.disabled = false;
+        button.innerHTML = 'Entrar no Painel';
         emailInput.disabled = false;
         passwordInput.disabled = false;
-        confirmPasswordInput.disabled = false;
     }
 }

@@ -2,16 +2,20 @@ using LisoLanches.Dtos.Request;
 using LisoLanches.Dtos.Response;
 using LisoLanches.Models;
 using LisoLanches.Repository;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace LisoLanches.Services;
 
 public class ItemService : IItemService
 {
     private readonly IItemRepository _itemRepository;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ItemService(IItemRepository itemRepository)
+    public ItemService(IItemRepository itemRepository, IWebHostEnvironment webHostEnvironment)
     {
         _itemRepository = itemRepository;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     public async Task<MenuItemResponse?> GetByIdAsync(int id)
@@ -28,13 +32,38 @@ public class ItemService : IItemService
         return items.Select(MapToResponse).ToList();
     }
 
+    private async Task<string?> SaveImageAsync(IFormFile? imageFile)
+    {
+        if (imageFile == null || imageFile.Length == 0)
+            return null;
+
+        var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
+
+        var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            await imageFile.CopyToAsync(fileStream);
+        }
+
+        return $"/images/{uniqueFileName}";
+    }
+
     public async Task<MenuItemResponse> CreateAsync(MenuItemCreateRequest request)
     {
+        var imagePath = await SaveImageAsync(request.ImageFile);
+
         var item = new Item
         {
             Name = request.Name,
             Price = request.Price,
-            IsAvailable = true
+            IsAvailable = request.IsAvailable,
+            ImagePath = imagePath
         };
 
         var createdItem = await _itemRepository.CreateAsync(item);
@@ -43,13 +72,21 @@ public class ItemService : IItemService
 
     public async Task<MenuItemResponse?> UpdateAsync(int id, MenuItemCreateRequest request)
     {
-        var itemExists = await _itemRepository.ExistsAsync(id);
-        if (!itemExists) return null;
+        var existingItem = await _itemRepository.GetByIdAsync(id);
+        if (existingItem == null) return null;
+
+        string? imagePath = existingItem.ImagePath;
+        if (request.ImageFile != null)
+        {
+            imagePath = await SaveImageAsync(request.ImageFile);
+        }
 
         var item = new Item
         {
             Name = request.Name,
-            Price = request.Price
+            Price = request.Price,
+            IsAvailable = request.IsAvailable,
+            ImagePath = imagePath
         };
 
         var updatedItem = await _itemRepository.UpdateAsync(id, item);
@@ -68,7 +105,8 @@ public class ItemService : IItemService
             Id = item.Id,
             Name = item.Name,
             Price = item.Price,
-            ImageUrl = item.ImagePath
+            ImageUrl = item.ImagePath,
+            IsAvailable = item.IsAvailable
         };
     }
 }

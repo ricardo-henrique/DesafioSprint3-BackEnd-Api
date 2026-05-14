@@ -1,4 +1,4 @@
-﻿using LisoLanches.Dtos.Request;
+using LisoLanches.Dtos.Request;
 using LisoLanches.Dtos.Response;
 using LisoLanches.Models;
 using LisoLanches.Repository;
@@ -73,7 +73,7 @@ public class OrderService : IOrderService
             OrderDate = o.OrderDate,
             TotalPrice = o.TotalPrice,
             TotalItems = o.OrderItems.Sum(oi => oi.Quantity),
-            // Since we added OrderStatus, you can include it here too if you updated the DTO
+            Status = o.Status.ToString()
         }).ToList();
     }
 

@@ -7,7 +7,6 @@ namespace LisoLanches.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
 public class ItemController : ControllerBase
 {
     private readonly IItemService _itemService;
@@ -35,7 +34,8 @@ public class ItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] MenuItemCreateRequest request)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> Create([FromForm] MenuItemCreateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -45,7 +45,8 @@ public class ItemController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, [FromBody] MenuItemCreateRequest request)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> Update(int id, [FromForm] MenuItemCreateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -58,6 +59,7 @@ public class ItemController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(int id)
     {
         var success = await _itemService.DeleteAsync(id);
